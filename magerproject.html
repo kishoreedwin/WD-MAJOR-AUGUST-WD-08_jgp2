@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <style>
+        
+
+ 
+button,
+input {
+  border: none;
+  background: none;
+  outline: none;
+  color: inherit;
+}
+
+
+
+ul {
+  list-style: none;
+}
+
+body {
+  background-image: url(bg2.jpg);
+  background-size: cover;
+  margin-left: 30%;
+  margin-top: 10%;
+  color: red;
+}
+
+.container {
+  width: 75%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.top-banner {
+  color: var(--text_light);
+}
+
+.heading {
+  font-weight: bold;
+  font-size: 4rem;
+  letter-spacing: 0.02em;
+  padding: 0 0 30px 0;
+}
+
+.top-banner form {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.top-banner form input {
+  font-size: 2rem;
+  height: 40px;
+  padding: 5px 5px 10px;
+  border-bottom: 1px solid;
+}
+
+.top-banner form input::placeholder {
+  color: currentColor; 
+}
+
+.top-banner form button {
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  padding: 15px 20px;
+  margin-left: 15px;
+  border-radius: 5px;
+  background: var(--red);
+  transition: background 0.3s ease-in-out;
+}
+
+.top-banner form button:hover {
+  background: var(--darkred);
+}
+
+.top-banner form .msg 
+{
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  max-width: 450px;
+  min-height: 40px;
+}
+.ajax-section {
+  margin: 70px 0 20px;
+}
+
+.ajax-section .cities {
+  display: grid;
+  grid-gap: 32px 20px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.ajax-section .city {
+  position: relative;
+  padding: 40px 10%;
+  border-radius: 20px;
+  background: var(--text_light);
+  color: var(--text_med);
+}
+.ajax-section figcaption {
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ajax-section .city-temp {
+  font-size: 5rem;
+  font-weight: bold;
+  margin-top: 10px;
+  color: var(--text_dark);
+}
+
+.ajax-section .city sup {
+  font-size: 0.5em;
+}
+
+
+
+.ajax-section .city-icon {
+  margin-top: 10px;
+  width: 100px;
+  height: 100px;
+}
+
+@media screen and (max-width: 1000px) {
+  body {
+    padding: 30px;
+  }
+  
+  .ajax-section .cities {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (max-width: 700px) {
+  .heading,
+  .ajax-section .city-temp {
+    font-size: 3rem;
+  }
+  
+  .ajax-section {
+    margin-top: 20px;
+  }
+  
+  .top-banner form {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .top-banner form input,
+  .top-banner form button {
+    width: 100%;
+  }
+
+  .top-banner form button {
+    margin: 20px 0 0 0;
+  }
+  
+  .top-banner form .msg {
+    position: static;
+    max-width: none;
+    min-height: 0;
+    margin-top: 10px;
+  }
+
+  .ajax-section .cities {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 500px) {
+  body {
+    padding: 15px;
+  }
+  
+  .ajax-section .cities {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  button,
+input {
+  border: none;
+  background: none;
+  outline: none;
+  color: inherit;
+}
+#demo
+{
+  color: gold;
+}
+
+</style>
+</head>
+<body>
+    
+      <section class="top-banner">
+        <div class="container">
+          <h1 class="heading"> Weather App</h1>
+          <form>
+            <input type="text" placeholder="Search for a city" autofocus>
+            <button type="submit" class="btn btn-success">SUBMIT</button>
+            <span class="msg"></span>
+          </form>
+        </div>
+      </section>
+      <section class="ajax-section">
+        <div class="container">
+          <ul class="cities"></ul>
+        </div>
+      </section>
+      <p id="demo"></p>
+      <script>
+        const form = document.querySelector(".top-banner form");
+        const input = document.querySelector(".top-banner input");
+        const msg = document.querySelector(".top-banner .msg");
+        const list = document.querySelector(".ajax-section .cities");
+
+        const apiKey = "4d8fb5b93d4af21d66a2948710284366";
+
+form.addEventListener("submit", e => {
+  e.preventDefault();
+  const listItems = list.querySelectorAll(".ajax-section .city");
+  const inputVal = input.value;
+
+  //ajax here
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${inputVal}&appid=${apiKey}&units=metric`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      const { main, name, sys, weather } = data;
+      const icon = `https://openweathermap.org/img/wn/${
+        weather[0]["icon"]
+      }@2x.png`;
+
+      const li = document.createElement("li");
+      li.classList.add("city");
+      const markup = `
+        <h2 class="city-name" data-name="${name},${sys.country}">
+          <span>${name}</span>
+          <sup>${sys.country}</sup>
+        </h2>
+        <div class="city-temp">${Math.round(main.temp)}<sup>°C</sup></div>
+        <figure>
+          <img class="city-icon" src=${icon} alt=${weather[0]["main"]}>
+          <figcaption>${weather[0]["description"]}</figcaption>
+        </figure>
+      `;
+      li.innerHTML = markup;
+      list.appendChild(li);
+    })
+    .catch(() => {
+      msg.textContent = "Please search for a valid city 😩";
+    });
+
+  msg.textContent = "";
+  form.reset();
+  input.focus();
+});
+const d = new Date();
+d.setFullYear(2022);
+document.getElementById("demo").innerHTML = d;
+</script>
+    
+</body>
+</html>
